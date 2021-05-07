@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Author: plusperson@gmail.com -->
+<mapper namespace="org.goal.rgas.mission.CategoryMapper">
+    <resultMap id="categoryResultMap" type="org.goal.rgas.mission.Category">
+        <result column="NO" property="no" />
+        <result column="TITLE" property="title" />
+    </resultMap>
+
+    <sql id="whereSql">
+        <where>
+            <if test="no != null and no != ''">
+                AND NO = #{no}
+            </if>
+            <if test="title != null and title != ''">
+                AND TITLE = #{title}
+            </if>
+        </where>
+    </sql>
+
+    <select id="list" parameterType="org.goal.rgas.mission.Category" resultMap="categoryResultMap">
+        SELECT *
+        FROM (
+            SELECT
+                NO,
+                TITLE
+            FROM CATEGORY
+        ) TB
+    </select>
+
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Author: plusperson@gmail.com -->
+<mapper namespace="org.goal.rgas.perform.PerformMapper">
+    <resultMap id="performResultMap" type="org.goal.rgas.perform.Perform">
+        <result column="NO" property="no" />
+        <result column="PAYMENT_NO" property="paymentNo" />
+        <result column="REGISTER_DATE" property="registerDate" />
+        <result column="LOGICAL" property="logical" />
+        <result column="PHYSICAL" property="physical" />
+        <result column="STATUS" property="status" />
+    </resultMap>
+
+    <sql id="whereSql">
+        <where>
+            <if test="no != 0">
+                AND NO = #{no}
+            </if>
+            <if test="paymentNo != 0">
+                AND PAYMENT_NO = #{paymentNo}
+            </if>
+            <if test="registerDate != null">
+                AND REGISTER_DATE = #{registerDate}
+            </if>
+            <if test="logical != null">
+                AND LOGICAL = #{logical}
+            </if>
+            <if test="physical != null">
+                AND PHYSICAL = #{physical}
+            </if>
+            <if test="status != ''">
+                AND STATUS = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="count" parameterType="org.goal.rgas.perform.Perform" resultType="int">
+        SELECT COUNT(*)
+        FROM PERFORM
+        <include refid="whereSql" />
+    </select>
+
+    <select id="list" parameterType="org.goal.rgas.perform.Perform" resultMap="performResultMap">
+        SELECT *
+        FROM (
+            SELECT
+                NO,
+                PAYMENT_NO,
+                REGISTER_DATE,
+                LOGICAL,
+                PHYSICAL,
+                STATUS
+            FROM PERFORM
+            <include refid="whereSql" />
+            ORDER BY NO DESC
+        ) TB
+    </select>
+
+    <select id="select" parameterType="org.goal.rgas.perform.Perform" resultMap="performResultMap">
+        SELECT
+            NO,
+            PAYMENT_NO,
+            REGISTER_DATE,
+            LOGICAL,
+            PHYSICAL,
+            STATUS
+        FROM PERFORM
+        <include refid="whereSql" />
+    </select>
+
+    <insert id="insert" parameterType="org.goal.rgas.perform.Perform">
+        INSERT INTO perform (
+            PAYMENT_NO,
+            REGISTER_DATE,
+            LOGICAL,
+            PHYSICAL
+        ) VALUES (
+            #{paymentNo},
+            NOW(),
+            #{logical},
+            #{physical}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.goal.rgas.perform.Perform">
+        UPDATE PERFORM
+        <set>
+            <if test="logical != null">
+                LOGICAL = #{logical},
+            </if>
+            <if test="physical != null">
+                PHYSICAL = #{physical},
+            </if>
+            <if test="status != ''">
+                STATUS = #{status},
+            </if>
+            <if test="status == ''">
+                STATUS = 'Y',
+            </if>
+        </set>
+        <where>
+        	<if test="status != ''">
+        		NO = #{no}
+        	</if>
+        	<if test="status == ''">
+	        	PAYMENT_NO = #{paymentNo} AND 
+	        	REGISTER_DATE = #{registerDate}
+        	</if>
+        </where>
+    </update>
+
+    <delete id="delete" parameterType="org.goal.rgas.perform.Perform">
+        DELETE FROM PERFORM
+        <include refid="whereSql" />
+    </delete>
+</mapper>
